@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  tomcat:
+    image: tomcat:9.0-jdk17-temurin
+    container_name: tomcat
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    volumes:
+      - /Docker/tomcat/webapps:/usr/local/tomcat/webapps
+      - /Docker/tomcat/logs:/usr/local/tomcat/logs
+    environment:
+      - TZ=Asia/Seoul
+      - JAVA_OPTS=-Xms256m -Xmx512m -Dfile.encoding=UTF-8
+    networks:
+      public-net:
+        ipv4_address: 10.10.0.20
+      internal-net:
+        ipv4_address: 10.20.0.20
+
+networks:
+  public-net:
+    name: public-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.0.0/16
+          gateway: 10.10.0.1
+  internal-net:
+    name: internal-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.20.0.0/16
+          gateway: 10.20.0.1

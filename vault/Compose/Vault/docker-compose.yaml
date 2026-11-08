@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8200:8200"
+    environment:
+      - TZ=Asia/Seoul
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_API_ADDR=http://127.0.0.1:8200
+    volumes:
+      - /Docker/vault/data:/vault/data
+      - /Docker/vault/config:/vault/config
+      - /Docker/vault/logs:/vault/logs
+    cap_add:
+      - IPC_LOCK
+    command: server
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      public-net:
+        ipv4_address: 10.10.0.40
+      internal-net:
+        ipv4_address: 10.20.0.40
+
+networks:
+  public-net:
+    external: true
+  internal-net:
+    external: true
+
